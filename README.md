@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # di-integration
 A data integration project that offers the project frame and automatic tests for the homework assignments of the "Data Integration" lecture.
 
@@ -36,3 +37,6 @@ Most automatic JUnit tests should fail at this step. The task is to implement al
 1. Please do *NOT* fork this project or post solutions for the assignments on GitHub!
 
 2. The code ducumentation and task specifications may provide very useful hints and help for solving the individual tasks.
+=======
+# TripleIntegration
+>>>>>>> c5e1e6ee750737c83291868409dad8f9465ab175

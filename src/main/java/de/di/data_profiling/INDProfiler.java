@@ -37,6 +37,6 @@ public class INDProfiler {
     private List<Set<String>> toColumnSets(String[][] columns) {
         return Arrays.stream(columns)
                 .map(column -> new HashSet<>(new ArrayList<>(List.of(column))))
-                .collect(Collectors.toList());`
+                .collect(Collectors.toList());
     }
 }

@@ -68,11 +68,29 @@ public class PositionListIndex {
         // Calculate the intersection of one PLI's clusters and another PLI's (conveniently already inverted)         //
         // invertedClusters. The clustersIntersection is a new list that stores the intersection result. Note that    //
         // the clusters are "Stripped Partitions", which means that only clusters of size >1 are part of the result.  //
-
-
-
         //                                                                                                            //
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Map to hold temporary clusters during intersection
+        Int2ObjectMap<IntArrayList> tempMap = new Int2ObjectArrayMap<>();
+
+        for (IntArrayList cluster : clusters) {
+            tempMap.clear(); // Clear map for each original cluster
+
+            for (int recordId : cluster) {
+                int clusterId = invertedClusters[recordId];
+                if (clusterId != -1) {
+                    tempMap.putIfAbsent(clusterId, new IntArrayList());
+                    tempMap.get(clusterId).add(recordId);
+                }
+            }
+
+            for (IntArrayList intersectionCluster : tempMap.values()) {
+                if (intersectionCluster.size() > 1) {
+                    clustersIntersection.add(intersectionCluster);
+                }
+            }
+        }
 
         return clustersIntersection;
     }

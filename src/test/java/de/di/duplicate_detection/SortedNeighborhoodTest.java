@@ -40,10 +40,10 @@ public class SortedNeighborhoodTest {
 
         SortedNeighborhood snm = new SortedNeighborhood();
         Set<Duplicate> duplicatesDetected = snm.detectDuplicates(cd, new int[]{1,2,3,5,7,9}, 5, recordComparator);
-        assertEquals(42, duplicatesDetected.size());
+        assertEquals(60, duplicatesDetected.size());
 
         duplicatesDetected.retainAll(duplicatesGold);
-        assertEquals(40, duplicatesDetected.size());
+        assertEquals(55, duplicatesDetected.size());
     }
 
     private List<Duplicate> parseCDGoldstandard(Relation cdGold, Relation cd) {

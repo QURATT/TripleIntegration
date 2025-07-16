@@ -1,3 +1,61 @@
+//package de.di.schema_matching;
+//
+//import de.di.Relation;
+//import de.di.schema_matching.structures.SimilarityMatrix;
+//import de.di.similarity_measures.Jaccard;
+//import de.di.similarity_measures.helper.Tokenizer;
+//
+//public class FirstLineSchemaMatcher {
+//
+//    public SimilarityMatrix match(Relation sourceRelation, Relation targetRelation) {
+//        String[][] sourceColumns = sourceRelation.getColumns();
+//        String[][] targetColumns = targetRelation.getColumns();
+//
+//        int sourceAttrCount = sourceColumns.length;
+//        int targetAttrCount = targetColumns.length;
+//
+//        double[][] matrix = new double[sourceAttrCount][targetAttrCount];
+//
+//        // Tokenizer trigram with padding
+//        Tokenizer tokenizer = new Tokenizer(3, true);
+//
+//        // Jaccard with bag semantics
+//        Jaccard jaccardBag = new Jaccard(tokenizer, true);
+//
+//        // Jaccard with set semantics
+//        Jaccard jaccardSet = new Jaccard(tokenizer, false);
+//
+//        for (int i = 0; i < sourceAttrCount; i++) {
+//            StringBuilder sourceConcat = new StringBuilder();
+//            for (String val : sourceColumns[i]) {
+//                if (val != null) {
+//                    sourceConcat.append(val.toLowerCase()).append(" ");
+//                }
+//            }
+//            String sourceString = sourceConcat.toString().trim();
+//
+//            for (int j = 0; j < targetAttrCount; j++) {
+//                StringBuilder targetConcat = new StringBuilder();
+//                for (String val : targetColumns[j]) {
+//                    if (val != null) {
+//                        targetConcat.append(val.toLowerCase()).append(" ");
+//                    }
+//                }
+//                String targetString = targetConcat.toString().trim();
+//
+//                double simBag = jaccardBag.calculate(sourceString, targetString);
+//                double simSet = jaccardSet.calculate(sourceString, targetString);
+//
+//                // Combine similarities - weighted average (equal weight here)
+//                double combinedSim = (simBag + simSet) / 2.0;
+//
+//                matrix[i][j] = combinedSim;
+//            }
+//        }
+//
+//        return new SimilarityMatrix(matrix, sourceRelation, targetRelation);
+//    }
+//}
 package de.di.schema_matching;
 
 import de.di.Relation;
@@ -7,55 +65,39 @@ import de.di.similarity_measures.helper.Tokenizer;
 
 public class FirstLineSchemaMatcher {
 
-    public SimilarityMatrix match(Relation sourceRelation, Relation targetRelation) {
-        String[][] sourceColumns = sourceRelation.getColumns();
-        String[][] targetColumns = targetRelation.getColumns();
+    public SimilarityMatrix match(Relation relA, Relation relB) {
+        String[][] colsA = relA.getColumns();
+        String[][] colsB = relB.getColumns();
 
-        int sourceAttrCount = sourceColumns.length;
-        int targetAttrCount = targetColumns.length;
+        int colsACount = colsA.length;
+        int colsBCount = colsB.length;
 
-        double[][] matrix = new double[sourceAttrCount][targetAttrCount];
+        double[][] scoreMatrix = new double[colsACount][colsBCount];
 
-        // Tokenizer trigram with padding
-        Tokenizer tokenizer = new Tokenizer(3, true);
+        // Use tokenization with token size 1 and padding enabled
+        Tokenizer tokenizer = new Tokenizer(1, true);
+        // Set up Jaccard similarity without normalization
+        Jaccard jaccard = new Jaccard(tokenizer, false);
 
-        // Jaccard with bag semantics
-        Jaccard jaccardBag = new Jaccard(tokenizer, true);
+        // Compare each attribute column from A with each from B
+        for (int i = 0; i < colsACount; i++) {
+            String[] columnA = colsA[i];
 
-        // Jaccard with set semantics
-        Jaccard jaccardSet = new Jaccard(tokenizer, false);
+            for (int j = 0; j < colsBCount; j++) {
+                String[] columnB = colsB[j];
 
-        for (int i = 0; i < sourceAttrCount; i++) {
-            StringBuilder sourceConcat = new StringBuilder();
-            for (String val : sourceColumns[i]) {
-                if (val != null) {
-                    sourceConcat.append(val.toLowerCase()).append(" ");
-                }
-            }
-            String sourceString = sourceConcat.toString().trim();
-
-            for (int j = 0; j < targetAttrCount; j++) {
-                StringBuilder targetConcat = new StringBuilder();
-                for (String val : targetColumns[j]) {
-                    if (val != null) {
-                        targetConcat.append(val.toLowerCase()).append(" ");
-                    }
-                }
-                String targetString = targetConcat.toString().trim();
-
-                double simBag = jaccardBag.calculate(sourceString, targetString);
-                double simSet = jaccardSet.calculate(sourceString, targetString);
-
-                // Combine similarities - weighted average (equal weight here)
-                double combinedSim = (simBag + simSet) / 2.0;
-
-                matrix[i][j] = combinedSim;
+                double similarity = jaccard.calculate(columnA, columnB);
+                scoreMatrix[i][j] = similarity;
             }
         }
 
-        return new SimilarityMatrix(matrix, sourceRelation, targetRelation);
+        return new SimilarityMatrix(scoreMatrix, relA, relB);
     }
 }
+
+
+
+
 
 
 
